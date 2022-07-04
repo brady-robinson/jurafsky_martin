@@ -95,7 +95,7 @@ import re
 # 	else:
 # 		print("no match")
 
-# with a function
+# with a deterministic function
 
 # tape = ["b","a","a","a", "a","a","a","!"]
 # machine = {0: {"b":1, "a": "FAIL", "!": "FAIL"}, 
@@ -125,8 +125,33 @@ import re
 
 # print(d_recognize(tape, machine))
 
+# with a non-deterministic function
+
+tape = ["b","a","a","a", "a","a","a","!"]
+machine = {0: {"b":1, "a": "FAIL", "!": "FAIL"}, 
+			1: {"b":"FAIL", "a": 2, "!": "FAIL"},
+			2: {"b":"FAIL", "a": [2,3], "!": "FAIL"},
+			3: {"b":"FAIL", "a": "FAIL", "!": 4},
+			4: {"b":"FAIL", "a": "FAIL", "!": "FAIL"}}
+
+def nd_recognize(tape, machine):
+	agenda = [(0,0)]
+	current_search_state = agenda.pop()
 
 
+	while (len(agenda) + 1) > 0:
+		if accept_state?(current_search_state):
+			return "accept"
+		else:
+			agenda.append(generate_new_states(current_search_state))
+
+		if len(agenda) == 0:
+			return "reject"
+		else:
+			current_search_state = agenda.pop()
+
+
+def 
 
 
 
