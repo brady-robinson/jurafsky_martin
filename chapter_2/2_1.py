@@ -127,7 +127,7 @@ import re
 
 # with a non-deterministic function
 
-tape = ["b","a","a","a", "a","a","a","!"]
+tape = ["b","a","a","a","a","a","!"]
 machine = {0: {"b":1, "a": "FAIL", "!": "FAIL"}, 
 			1: {"b":"FAIL", "a": 2, "!": "FAIL"},
 			2: {"b":"FAIL", "a": [2,3], "!": "FAIL"},
@@ -140,20 +140,55 @@ def nd_recognize(tape, machine):
 
 
 	while (len(agenda) + 1) > 0:
-		if accept_state?(current_search_state):
+		if accept_state(current_search_state, tape, machine):
 			return "accept"
 		else:
-			agenda.append(generate_new_states(current_search_state))
+			try:
+				new_states = generate_new_states(current_search_state, tape, machine)
+			except KeyError:
+				return "reject"
+			if new_states:
+				if type(new_states) is list:
+					for element in new_states:
+						if element not in agenda:
+							agenda.append(element)
+				else:
+					if new_states not in agenda:
+						agenda.append(new_states)
 
 		if len(agenda) == 0:
 			return "reject"
 		else:
 			current_search_state = agenda.pop()
 
+def generate_new_states(current_state, tape, machine):
+	node = current_state[0]
+	index = current_state[1]
 
-def 
+	if type(machine[node][tape[index]]) is int:
+		return (machine[node][tape[index]], index + 1)
+	elif type(machine[node][tape[index]]) is str:
+		return False
+	else:
+		if len(machine[node][tape[index]]) > 1 and type(machine[node][tape[index]]) is not str:
+			output_array = []
+			for element in machine[node][tape[index]]:
+				output_array.append((element, index+1))
 
+			return output_array
+	
 
+def accept_state(search_state, tape, machine):
+	node = search_state[0]
+	index = search_state[1]
+
+	if index == len(tape)-1:
+		if node in machine.keys():
+			return True
+		else:
+			return False
+
+print(nd_recognize(tape, machine))
 
 
 
